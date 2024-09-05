@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="RP" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>'rl.bandits' - Reinforcement Learning</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\u0027rl.bandits\u0027";
+        var mkdocs_page_input_path = "bandits_package.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Reinforcement Learning
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Reinforcement Learning documentation!</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../simulations_package/">'rl.simulations'</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">'rl.bandits'</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#rl.bandits.greedy_ee">greedy_ee</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#rl.bandits.greedy_ucb">greedy_ucb</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#rl.bandits.k_arms_reward_creator">k_arms_reward_creator</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#rl.bandits.simulations_decorators">simulations_decorators</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Reinforcement Learning</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">'rl.bandits'</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="rlbandits">'rl.bandits'</h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+        <p>K-Arms bandit algorithms.</p>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="rl.bandits.greedy_ee" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">greedy_ee</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">greedy_ee</span><span class="p">(</span>
+    <span class="n">k</span><span class="p">,</span>
+    <span class="n">bandits</span><span class="p">,</span>
+    <span class="n">epsilon</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">max_try</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span>
+    <span class="n">Qs_init</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">record_stat</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>A greedy exploration/explotation algorithm.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>bandits</code></b>
+              –
+              <div class="doc-md-description">
+                <p>A k-arms bandits that returns rewards for actions in {0, 1, ..., k-1}.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>epsilon</code></b>
+                  (<code>float</code>, default:
+                      <code>.1</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Probability of exploration.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>max_try</code></b>
+                  (<code>int</code>, default:
+                      <code>10000</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Maximum number of try.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>Qs_init</code></b>
+                  (<code>int</code>, default:
+                      <code>0.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Initial value of Q estimates. For optimistic initialisation,
+use positive values.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>record_stat</code></b>
+                  (<code>bool</code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Records the statistics and then returns it as stat dictionary content (see Returns).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>Qs</code></b>(                  <code>ndarray</code>
+)              –
+              <div class="doc-md-description">
+                <p>A one-D array of size 'k' that contains the estimated expected action-value.</p>
+              </div>
+            </li>
+            <li>
+<b><code>stats</code></b>(                  <code>dict</code>
+)              –
+              <div class="doc-md-description">
+                <p>A dictionary of recorded statistics. It will be empty when 'record_stat' is False,
+returns empty. The followings are the keys of the recorded stats:</p>
+<pre><code>'rewards' : ndarray
+    A one-D array of size 'max_try' that contains each action's reward in order.
+'Ns' : ndarray
+    A one-D array of size 'k' that contains the number of time
+    each action were selected.
+'actions' : ndarray
+    A one-D array of size 'max_try' that contains each actions in order.
+</code></pre>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="rl.bandits.greedy_ucb" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">greedy_ucb</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">greedy_ucb</span><span class="p">(</span>
+    <span class="n">k</span><span class="p">,</span>
+    <span class="n">bandits</span><span class="p">,</span>
+    <span class="n">c</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">max_try</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span>
+    <span class="n">Qs_init</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">record_stat</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>An upper-confidence-bound exploration/explotation algorithm.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>bandits</code></b>
+              –
+              <div class="doc-md-description">
+                <p>A k-arms bandits that returns rewards for actions in {0, 1, ..., k-1}.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>c</code></b>
+                  (<code>float</code>, default:
+                      <code>2.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>A positive value for controling exploration degree.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>max_try</code></b>
+                  (<code>int</code>, default:
+                      <code>10000</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Maximum number of try.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>Qs_init</code></b>
+                  (<code>int</code>, default:
+                      <code>0.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Initial value of Q estimates. For optimistic initialisation,
+use positive values.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>record_stat</code></b>
+                  (<code>bool</code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Records the statistics and then returns it as stat dictionary content (see Returns).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>Qs</code></b>(                  <code>ndarray</code>
+)              –
+              <div class="doc-md-description">
+                <p>A one-D array of size 'k' that contains the estimated expected action-value.</p>
+              </div>
+            </li>
+            <li>
+<b><code>stats</code></b>(                  <code>dict</code>
+)              –
+              <div class="doc-md-description">
+                <p>A dictionary of recorded statistics. It will be empty when 'record_stat' is False,
+returns empty. The followings are the keys of the recorded stats:</p>
+<pre><code>'rewards' : ndarray
+    A one-D array of size 'max_try' that contains each action's reward in order.
+'Ns' : ndarray
+    A one-D array of size 'k' that contains the number of time
+    each action were selected.
+'actions' : ndarray
+    A one-D array of size 'max_try' that contains each actions in order.
+</code></pre>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="rl.bandits.k_arms_reward_creator" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">k_arms_reward_creator</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">k_arms_reward_creator</span><span class="p">(</span>
+    <span class="n">k</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">mean</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">std</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Create a normal random reward model for k actions.</p>
+<p>q_i<em>, pr K actions averages, are selected from a normal
+distribution N(mu, sigma^2). Each i arm will be sampled
+like a normal distribution N(q_i</em>, 1) for query.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>k</code></b>
+                  (<code>int</code>, default:
+                      <code>10</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>number of arms or actions.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>mean</code></b>
+                  (<code>float</code>, default:
+                      <code>0.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The mean value of random q_i*.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>std</code></b>
+                  (<code>float</code>, default:
+                      <code>1.0</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The standard deviation value of random q_i*.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>q_stars</code></b>(                  <code>ndarray</code>
+)              –
+              <div class="doc-md-description">
+                <p>One-D array of k q_i*.</p>
+              </div>
+            </li>
+            <li>
+<b><code>reward</code></b>(                  <code>func</code>
+)              –
+              <div class="doc-md-description">
+                <p>A function with signuture reward_i that samples from N(q_i*, 1).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="rl.bandits.simulations_decorators" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">simulations_decorators</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">simulations_decorators</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>A decorator that stacks the returns of all parallel simulations.</p>
+<p>It assumes the 'func' rturns (Qs, stats) format that bandit algorithms follow.</p>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../simulations_package/" class="btn btn-neutral float-left" title="'rl.simulations'"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../simulations_package/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
