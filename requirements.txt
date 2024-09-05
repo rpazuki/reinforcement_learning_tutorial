@@ -1,0 +1,11 @@
+black
+flake8
+isort
+mkdocs
+mkdocstrings
+"mkdocstrings[python]"
+pip
+python-dotenv
+pytest
+multiprocess
+-e .
