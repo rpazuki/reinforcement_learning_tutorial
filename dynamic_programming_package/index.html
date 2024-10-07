@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="RP" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>'rl.dynamic_programming' - Reinforcement Learning</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\u0027rl.dynamic_programming\u0027";
+        var mkdocs_page_input_path = "dynamic_programming_package.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Reinforcement Learning
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Reinforcement Learning documentation!</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../simulations_package/">'rl.simulations'</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../bandits_package/">'rl.bandits'</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">'rl.dynamic_programming'</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#rl.dynamic_programming.policy_evaluation">policy_evaluation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#rl.dynamic_programming.policy_improvement">policy_improvement</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#rl.dynamic_programming.policy_iteration">policy_iteration</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Reinforcement Learning</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">'rl.dynamic_programming'</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="rldynamic_programming">'rl.dynamic_programming'</h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+        <p>Dynamic programin algorithms:</p>
+<pre><code>1- Policy iteration.
+
+2- Value iteration.
+</code></pre>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="rl.dynamic_programming.policy_evaluation" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">policy_evaluation</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">policy_evaluation</span><span class="p">(</span>
+    <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">float</span><span class="p">]],</span>
+    <span class="n">dynamics</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span>
+        <span class="n">tuple</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">str</span><span class="p">],</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n">tuple</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">str</span><span class="p">],</span> <span class="n">float</span><span class="p">]</span>
+    <span class="p">],</span>
+    <span class="n">states_value</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gamma</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>
+    <span class="n">episodic</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">est_acc</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+    <span class="n">max_iteration</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">float</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Iterative policy evaluation for estimating V = v_{pi}.</p>
+<p>Given a policy, this function finds the state-value function.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>policy</code></b>
+                  (<code><span title="collections.abc.Mapping">Mapping</span>[str, <span title="collections.abc.Mapping">Mapping</span>[str, float]]</code>)
+              –
+              <div class="doc-md-description">
+                <p>The policy function, pi(a|s). It is a probability distribution for each action,
+given the state.
+It must be a dictianry of dictionaries {state:{action:probability}}.
+Deterministic polices have one and only one action for each state.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dynamics</code></b>
+                  (<code><span title="collections.abc.Mapping">Mapping</span>[tuple[str, str], <span title="collections.abc.Mapping">Mapping</span>[tuple[str, str], float]]</code>)
+              –
+              <div class="doc-md-description">
+                <p>The environment's dynamic p(s', r | s, a). It is a dictionary of dictionaries,
+such that its keys are tuples of (state, action) and its values are dictionaries
+of {(state, reward):probability}.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>states_value</code></b>
+                  (<code><span title="collections.abc.Mapping">Mapping</span>[str, float]</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The initial values of estimating stat-value function, v(s).
+When it is 'None', the method initialise it. For episodic=True
+inputs, the initialisation create the "TERM" state too.
+It must be a dictionary of (state:value).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>gamma</code></b>
+                  (<code>float</code>, default:
+                      <code>0.9</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The discount value. It must be in (0,1].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>episodic</code></b>
+                  (<code>bool</code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Episodic tasks. If it is True, there MUST be one state that is called
+"TERM".</p>
+              </div>
+            </li>
+            <li>
+              <b><code>est_acc</code></b>
+                  (<code>float</code>, default:
+                      <code>0.001</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The accuracy of the estimation. The iteration will stop when the difference
+between the current estimates and the previous one is less than est_acc.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>max_iteration</code></b>
+                  (<code>int</code>, default:
+                      <code>1000</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The maximum iteration before halting the iterartive algorithm. Raise a warning
+in case it halts the iteration.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>states_value</code></b>(                  <code><span title="collections.abc.Mapping">Mapping</span>[str, float]</code>
+)              –
+              <div class="doc-md-description">
+                <p>The updated stat-value function.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="rl.dynamic_programming.policy_improvement" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">policy_improvement</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">policy_improvement</span><span class="p">(</span>
+    <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">float</span><span class="p">]],</span>
+    <span class="n">dynamics</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span>
+        <span class="n">tuple</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">str</span><span class="p">],</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n">tuple</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">str</span><span class="p">],</span> <span class="n">float</span><span class="p">]</span>
+    <span class="p">],</span>
+    <span class="n">states_value</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">float</span><span class="p">],</span>
+    <span class="n">gamma</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">float</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Iterative policy improvement for pi(s).</p>
+<p>Given a states-value function, this function finds the greedy improved policy.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>policy</code></b>
+                  (<code><span title="collections.abc.Mapping">Mapping</span>[str, <span title="collections.abc.Mapping">Mapping</span>[str, float]]</code>)
+              –
+              <div class="doc-md-description">
+                <p>The policy function, pi(a|s). It is a probability distribution for each action,
+given the state.
+It must be a dictianry of dictionaries {state:{action:probability}}.
+Deterministic polices have one and only one action for each state.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dynamics</code></b>
+                  (<code><span title="collections.abc.Mapping">Mapping</span>[tuple[str, str], <span title="collections.abc.Mapping">Mapping</span>[tuple[str, str], float]]</code>)
+              –
+              <div class="doc-md-description">
+                <p>The environment's dynamic p(s', r | s, a). It is a dictionary of dictionaries,
+such that its keys are tuples of (state, action) and its values are dictionaries
+of {(state, reward):probability}.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>states_value</code></b>
+                  (<code><span title="collections.abc.Mapping">Mapping</span>[str, float]</code>)
+              –
+              <div class="doc-md-description">
+                <p>The initial values of estimating stat-value function, v(s).
+It must be a dictionary of (state:value).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>gamma</code></b>
+                  (<code>float</code>, default:
+                      <code>0.9</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The discount value. It must be in (0,1].</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>states_value</code></b>(                  <code><span title="collections.abc.Mapping">Mapping</span>[str, float]</code>
+)              –
+              <div class="doc-md-description">
+                <p>The updated stat-value function.</p>
+              </div>
+            </li>
+            <li>
+<b><code>is_stable</code></b>(                  <code>bool</code>
+)              –
+              <div class="doc-md-description">
+                <p>Is the new policy the same as the old one.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="rl.dynamic_programming.policy_iteration" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">policy_iteration</span>
+
+
+</h2>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">policy_iteration</span><span class="p">(</span>
+    <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">float</span><span class="p">]],</span>
+    <span class="n">dynamics</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span>
+        <span class="n">tuple</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">str</span><span class="p">],</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n">tuple</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">str</span><span class="p">],</span> <span class="n">float</span><span class="p">]</span>
+    <span class="p">],</span>
+    <span class="n">states_value</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gamma</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>
+    <span class="n">episodic</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">est_acc</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+    <span class="n">max_iteration</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">float</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Iterative policy evaluation for estimating V = v_{pi}.</p>
+<p>Given a policy, this function finds the state-value function.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>policy</code></b>
+                  (<code><span title="collections.abc.Mapping">Mapping</span>[str, <span title="collections.abc.Mapping">Mapping</span>[str, float]]</code>)
+              –
+              <div class="doc-md-description">
+                <p>The policy function, pi(a|s). It is a probability distribution for each action,
+given the state.
+It must be a dictianry of dictionaries {state:{action:probability}}.
+Deterministic polices have one and only one action for each state.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>dynamics</code></b>
+                  (<code><span title="collections.abc.Mapping">Mapping</span>[tuple[str, str], <span title="collections.abc.Mapping">Mapping</span>[tuple[str, str], float]]</code>)
+              –
+              <div class="doc-md-description">
+                <p>The environment's dynamic p(s', r | s, a). It is a dictionary of dictionaries,
+such that its keys are tuples of (state, action) and its values are dictionaries
+of {(state, reward):probability}.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>states_value</code></b>
+                  (<code><span title="collections.abc.Mapping">Mapping</span>[str, float]</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The initial values of estimating stat-value function, v(s).
+When it is 'None', the method initialise it. For episodic=True
+inputs, the initialisation create the "TERM" state too.
+It must be a dictionary of (state:value).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>gamma</code></b>
+                  (<code>float</code>, default:
+                      <code>0.9</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The discount value. It must be in (0,1].</p>
+              </div>
+            </li>
+            <li>
+              <b><code>episodic</code></b>
+                  (<code>bool</code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Episodic tasks. If it is True, there MUST be one state that is called
+"TERM".</p>
+              </div>
+            </li>
+            <li>
+              <b><code>est_acc</code></b>
+                  (<code>float</code>, default:
+                      <code>0.001</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The accuracy of the estimation. The iteration will stop when the difference
+between the current estimates and the previous one is less than est_acc.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>max_iteration</code></b>
+                  (<code>int</code>, default:
+                      <code>1000</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The maximum iteration before halting the iterative algorithm of policy evaluation.
+Raise a warning in case it halts the iteration.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>policy</code></b>(                  <code><span title="collections.abc.Mapping">Mapping</span>[str, <span title="collections.abc.Mapping">Mapping</span>[str, float]]</code>
+)              –
+              <div class="doc-md-description">
+                <p>The converged, optimised policy.</p>
+              </div>
+            </li>
+            <li>
+<b><code>states_value</code></b>(                  <code><span title="collections.abc.Mapping">Mapping</span>[str, float]</code>
+)              –
+              <div class="doc-md-description">
+                <p>The updated stat-value function.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../bandits_package/" class="btn btn-neutral float-left" title="'rl.bandits'"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../bandits_package/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
