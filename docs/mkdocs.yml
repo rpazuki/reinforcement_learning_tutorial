@@ -11,6 +11,7 @@ nav:
     - index.md
     - simulations_package.md
     - bandits_package.md
+    - dynamic_programming_package.md
 #
 plugins:
     - search
@@ -25,4 +26,6 @@ plugins:
                     parameter_headings: true
                     separate_signature: true
                     show_signature_annotations: true
-                    signature_crossrefs: true                    
+                    signature_crossrefs: true
+                    filters:
+                    - "!^__"                    
