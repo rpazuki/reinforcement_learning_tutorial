@@ -4,6 +4,7 @@ isort
 mkdocs
 mkdocstrings
 "mkdocstrings[python]"
+mkdocs-open-in-new-tab
 pip
 python-dotenv
 pytest

@@ -15,6 +15,7 @@ nav:
 #
 plugins:
     - search
+    - open-in-new-tab
     - mkdocstrings:
         default_handler: python
         handlers:
@@ -26,6 +27,6 @@ plugins:
                     parameter_headings: true
                     separate_signature: true
                     show_signature_annotations: true
-                    signature_crossrefs: true
+                    signature_crossrefs: true                    
                     filters:
                     - "!^__"                    
