@@ -7,8 +7,6 @@ Dynamic programin algorithms:
 """
 
 import copy
-
-# import stat
 import warnings
 from collections.abc import Hashable, Mapping
 
@@ -73,11 +71,13 @@ def __Bellman_average__(
 
 
 def __zero_states_value__(
-    policy: Mapping[Hashable, Mapping[Hashable, float]], episodic: bool
+    policy: Mapping[Hashable, Mapping[Hashable, float]],
+    episodic: bool,
+    term_key: Hashable = "TERM",
 ) -> dict:
     if episodic:
         states_value = {
-            "states": {key: i for i, key in enumerate(policy)} | {"TERM": len(policy)},
+            "states": {key: i for i, key in enumerate(policy)} | {term_key: len(policy)},
             "values": np.array([0.0 for _ in policy] + [0.0]),
         }
     else:
@@ -96,6 +96,7 @@ def policy_evaluation(
     episodic: bool = True,
     est_acc: float = 0.001,
     max_iteration: int = 100,
+    term_key: Hashable = "TERM",
 ) -> dict:
     """
     Iterative policy evaluation for estimating V = v_{pi}.
@@ -128,7 +129,7 @@ def policy_evaluation(
 
     episodic: bool, default=True
         Episodic tasks. If it is True, there MUST be one state that is called
-        "TERM".
+        term_key.
 
     est_acc: float, default=0.001
         The accuracy of the estimation. The iteration will stop when the difference
@@ -137,6 +138,10 @@ def policy_evaluation(
     max_iteration: int, default=100
         The maximum iteration before halting the iterartive algorithm. Raise a warning
         in case it halts the iteration.
+
+    term_key: Hashable, default="TERM"
+        For episodic tasks, term_key will be used as the terminal states keys in
+        dictionaries.
 
     Returns
     -------
@@ -148,17 +153,17 @@ def policy_evaluation(
     assert gamma <= 1.0, f"The discount_gamma='{gamma}' must be greater than or equal one."
 
     if states_value is None:
-        states_value = __zero_states_value__(policy, episodic)
+        states_value = __zero_states_value__(policy, episodic, term_key)
 
-    if episodic and "TERM" not in states_value["states"]:
-        raise ValueError("For episodic tasks, there must be a 'TERM' state.")
+    if episodic and term_key not in states_value["states"]:
+        raise ValueError(f"For episodic tasks, there must be a terminal state '{term_key}'.")
 
     iteration = 0
     while iteration < max_iteration:  # expected update loop
         # The variable for storing the maximum difference of changes per iteration
         max_delta = 0
         for state, i in states_value["states"].items():
-            if state == "TERM":
+            if state == term_key:
                 continue
             value = states_value["values"][i]
             # Averaged state-value fro one step using Bellman eq.
@@ -256,6 +261,7 @@ def policy_iteration(
     l2_acc: float = 0.1,
     max_evaluation_iteration: int = 100,
     max_iteration: int = 100,
+    term_key: Hashable = "TERM",
     verbose: bool = False,
 ) -> Mapping[Hashable, float]:
     """
@@ -289,7 +295,7 @@ def policy_iteration(
 
     episodic: bool, default=True
         Episodic tasks. If it is True, there MUST be one state that is called
-        "TERM".
+        term_key.
 
     est_acc: float, default=0.1
         The accuracy of the estimation. The iteration will stop when the difference
@@ -309,6 +315,10 @@ def policy_iteration(
         The maximum iteration before halting the iterative algorithm of policy evaluation.
         Raise a warning in case it halts the iteration.
 
+    term_key: Hashable, default="TERM"
+        For episodic tasks, term_key will be used as the terminal states keys in
+        dictionaries.
+
     Returns
     -------
     policy: Mapping[str, Mapping[Hashable, float]]
@@ -321,10 +331,10 @@ def policy_iteration(
     assert gamma <= 1.0, f"The discount_gamma='{gamma}' must be greater than or equal one."
 
     if states_value is None:
-        states_value = __zero_states_value__(policy, episodic)
+        states_value = __zero_states_value__(policy, episodic, term_key)
 
-    if episodic and "TERM" not in states_value["states"]:
-        raise ValueError("For episodic tasks, there must be a 'TERM' state.")
+    if episodic and term_key not in states_value["states"]:
+        raise ValueError(f"For episodic tasks, there must be a terminal state '{term_key}'.")
 
     iteration = 0
 
@@ -338,6 +348,7 @@ def policy_iteration(
             episodic,
             est_acc,
             max_evaluation_iteration,
+            term_key,
         )
         values_L2 = np.linalg.norm(states_value["values"] - states_value_new["values"])
         states_value = states_value_new
@@ -370,6 +381,7 @@ def value_iteration(
     episodic: bool = True,
     est_acc: float = 0.001,
     max_iteration: int = 1000,
+    term_key: Hashable = "TERM",
     verbose: bool = False,
 ) -> tuple[Mapping[Hashable, Mapping[Hashable, float]], Mapping[Hashable, float]]:
     """
@@ -413,6 +425,10 @@ def value_iteration(
         The maximum iteration before halting the iterartive algorithm. Raise a warning
         in case it halts the iteration.
 
+    term_key: Hashable, default="TERM"
+        For episodic tasks, term_key will be used as the terminal states keys in
+        dictionaries.
+
     Returns
     -------
     states_value: dict
@@ -423,10 +439,10 @@ def value_iteration(
     assert gamma <= 1.0, f"The discount_gamma='{gamma}' must be greater than or equal one."
 
     if states_value is None:
-        states_value = __zero_states_value__(policy, episodic)
+        states_value = __zero_states_value__(policy, episodic, term_key)
 
-    if episodic and "TERM" not in states_value["states"]:
-        raise ValueError("For episodic tasks, there must be a 'TERM' state.")
+    if episodic and term_key not in states_value["states"]:
+        raise ValueError(f"For episodic tasks, there must be a terimanl state '{term_key}'.")
 
     iteration = 0
     while iteration < max_iteration:  # expected update loop
@@ -435,7 +451,7 @@ def value_iteration(
         for current_state, i in states_value["states"].items():
             value = states_value["values"][i]
 
-            if current_state == "TERM":
+            if current_state == term_key:
                 continue
             actions = policy[current_state]
             # Calculate the expected return, based on the given states_values
