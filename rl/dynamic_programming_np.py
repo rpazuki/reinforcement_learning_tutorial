@@ -6,6 +6,8 @@ Dynamic programin algorithms:
     2- Value iteration.
 """
 
+import copy
+
 # import stat
 import warnings
 from collections.abc import Hashable, Mapping
@@ -17,8 +19,8 @@ def __return_expectation__(
     current_state: Hashable,
     gamma: float,
     action: Hashable,
-    p: Mapping[tuple[Hashable, Hashable], Mapping[tuple[Hashable, float], float]],
-    v: Mapping[Hashable, float],
+    dynamics: dict,
+    states_value: dict,
 ) -> float:
     """
     sum_{s', r} p(s',r| s, a) [r + gamma v(s')]
@@ -30,18 +32,25 @@ def __return_expectation__(
     #     ret += new_value
 
     # return ret
-    return np.sum(
-        [
-            p_dynamic * (reward + gamma * v[next_state])  # p(s',r| s,a) [r + \gamma v(s')]
-            for (next_state, reward), p_dynamic in p[(current_state, action)].items()
-        ]
-    )
+    # return np.sum(
+    #     [
+    #         p_dynamic * (reward + gamma * v[next_state])  # p(s',r| s,a) [r + \gamma v(s')]
+    #         for (next_state, reward), p_dynamic in p[(current_state, action)].items()
+    #     ]
+    # )
+    current_state_dynamics = dynamics[(current_state, action)]
+    probs = current_state_dynamics["probs"]
+    rewards = current_state_dynamics["rewards"]
+    indices = current_state_dynamics["indices"]
+    values = states_value["values"]
+
+    return np.sum(probs * (rewards + gamma * values[indices]))  # p(s',r| s,a) [r + \gamma v(s')]
 
 
 def __Bellman_average__(
     policy: Mapping[Hashable, Mapping[Hashable, float]],
-    dynamics: Mapping[tuple[Hashable, Hashable], Mapping[tuple[Hashable, float], float]],
-    states_value: Mapping[Hashable, float],
+    dynamics: dict,
+    states_value: dict,
     gamma: float,
     current_state: Hashable,
 ) -> Mapping[Hashable, float]:
@@ -65,22 +74,29 @@ def __Bellman_average__(
 
 def __zero_states_value__(
     policy: Mapping[Hashable, Mapping[Hashable, float]], episodic: bool
-) -> Mapping[Hashable, float]:
-    states_value = {key: 0.0 for key in policy.keys()}
+) -> dict:
     if episodic:
-        states_value["TERM"] = 0.0
+        states_value = {
+            "states": {key: i for i, key in enumerate(policy)} | {"TERM": len(policy)},
+            "values": np.array([0.0 for _ in policy] + [0.0]),
+        }
+    else:
+        states_value = {
+            "states": {key: i for i, key in enumerate(policy)},
+            "values": np.array([0.0 for _ in policy]),
+        }
     return states_value
 
 
 def policy_evaluation(
     policy: Mapping[Hashable, Mapping[Hashable, float]],
-    dynamics: Mapping[tuple[Hashable, Hashable], Mapping[tuple[Hashable, float], float]],
-    states_value: Mapping[Hashable, float] = None,
+    dynamics: Mapping[tuple[Hashable, Hashable], dict],
+    states_value: dict = None,
     gamma: float = 0.9,
     episodic: bool = True,
     est_acc: float = 0.001,
     max_iteration: int = 100,
-) -> Mapping[Hashable, float]:
+) -> dict:
     """
     Iterative policy evaluation for estimating V = v_{pi}.
 
@@ -94,16 +110,18 @@ def policy_evaluation(
         It must be a dictianry of dictionaries {state:{action:probability}}.
         Deterministic polices have one and only one action for each state.
 
-    dynamics: Mapping[tuple[Hashable, Hashable], Mapping[tuple[Hashable, float], float]]
+    dynamics: Mapping[tuple[Hashable, Hashable], dict]
         The environment's dynamic p(s', r | s, a). It is a dictionary of dictionaries,
         such that its keys are tuples of (state, action) and its values are dictionaries
-        of {(state, reward):probability}.
+        with three elements
+        {"indices":ndarray, "rewards":ndarray, "probs":ndarray}.
+        The "indices" are the indices of states in state_values.
 
-    states_value: Mapping[Hashable, float], default=None
+    states_value: dict, default=None
         The initial values of estimating stat-value function, v(s).
         When it is 'None', the method initialise it. For episodic=True
         inputs, the initialisation create the "TERM" state too.
-        It must be a dictionary of (state:value).
+        It must be a dictionary like {"states":{state:index}, "values":ndarray}.
 
     gamma: float, default=0.9
         The discount value. It must be in (0,1].
@@ -122,7 +140,7 @@ def policy_evaluation(
 
     Returns
     -------
-    states_value: Mapping[Hashable, float]
+    states_value: dict
         The updated stat-value function.
 
     """
@@ -132,22 +150,23 @@ def policy_evaluation(
     if states_value is None:
         states_value = __zero_states_value__(policy, episodic)
 
-    if episodic and "TERM" not in states_value.keys():
+    if episodic and "TERM" not in states_value["states"]:
         raise ValueError("For episodic tasks, there must be a 'TERM' state.")
 
     iteration = 0
     while iteration < max_iteration:  # expected update loop
         # The variable for storing the maximum difference of changes per iteration
         max_delta = 0
-        for state, value in states_value.items():
+        for state, i in states_value["states"].items():
             if state == "TERM":
                 continue
+            value = states_value["values"][i]
             # Averaged state-value fro one step using Bellman eq.
             updated_value = __Bellman_average__(policy, dynamics, states_value, gamma, state)
             # Store the total maximum changes per iteration
             max_delta = max(max_delta, abs(updated_value - value))
             # In-place update
-            states_value[state] = updated_value
+            states_value["values"][i] = updated_value
         iteration += 1
 
         if max_delta <= est_acc:
@@ -160,8 +179,8 @@ def policy_evaluation(
 
 def policy_improvement(
     policy: Mapping[Hashable, Mapping[Hashable, float]],
-    dynamics: Mapping[tuple[Hashable, Hashable], Mapping[tuple[Hashable, float], float]],
-    states_value: Mapping[Hashable, float],
+    dynamics: Mapping[tuple[Hashable, Hashable], dict],
+    states_value: dict,
     gamma: float = 0.9,
 ) -> tuple[Mapping[Hashable, float], bool]:
     """
@@ -177,14 +196,18 @@ def policy_improvement(
         It must be a dictianry of dictionaries {state:{action:probability}}.
         Deterministic polices have one and only one action for each state.
 
-    dynamics: Mapping[tuple[Hashable, Hashable], Mapping[tuple[Hashable, float], float]]
+    dynamics: Mapping[tuple[Hashable, Hashable], dict]
         The environment's dynamic p(s', r | s, a). It is a dictionary of dictionaries,
         such that its keys are tuples of (state, action) and its values are dictionaries
-        of {(state, reward):probability}.
+        with three elements
+        {"indices":ndarray, "rewards":ndarray, "probs":ndarray}.
+        The "indices" are the indices of states in state_values.
 
-    states_value: Mapping[Hashable, float]
+    states_value: dict, default=None
         The initial values of estimating stat-value function, v(s).
-        It must be a dictionary of (state:value).
+        When it is 'None', the method initialise it. For episodic=True
+        inputs, the initialisation create the "TERM" state too.
+        It must be a dictionary like {"states":{state:index}, "values":ndarray}.
 
     gamma: float, default=0.9
         The discount value. It must be in (0,1].
@@ -225,8 +248,8 @@ def policy_improvement(
 
 def policy_iteration(
     policy: Mapping[Hashable, Mapping[Hashable, float]],
-    dynamics: Mapping[tuple[Hashable, Hashable], Mapping[tuple[Hashable, float], float]],
-    states_value: Mapping[Hashable, float] = None,
+    dynamics: Mapping[tuple[Hashable, Hashable], dict],
+    states_value: dict = None,
     gamma: float = 0.9,
     episodic: bool = True,
     est_acc: float = 0.1,
@@ -248,16 +271,18 @@ def policy_iteration(
         It must be a dictianry of dictionaries {state:{action:probability}}.
         Deterministic polices have one and only one action for each state.
 
-    dynamics: Mapping[tuple[Hashable, Hashable], Mapping[tuple[Hashable, float], float]]
+    dynamics: Mapping[tuple[Hashable, Hashable], dict]
         The environment's dynamic p(s', r | s, a). It is a dictionary of dictionaries,
         such that its keys are tuples of (state, action) and its values are dictionaries
-        of {(state, reward):probability}.
+        with three elements
+        {"indices":ndarray, "rewards":ndarray, "probs":ndarray}.
+        The "indices" are the indices of states in state_values.
 
-    states_value: Mapping[Hashable, float], default=None
+    states_value: dict, default=None
         The initial values of estimating stat-value function, v(s).
         When it is 'None', the method initialise it. For episodic=True
         inputs, the initialisation create the "TERM" state too.
-        It must be a dictionary of (state:value).
+        It must be a dictionary like {"states":{state:index}, "values":ndarray}.
 
     gamma: float, default=0.9
         The discount value. It must be in (0,1].
@@ -288,7 +313,7 @@ def policy_iteration(
     -------
     policy: Mapping[str, Mapping[Hashable, float]]
         The converged, optimised policy.
-    states_value: Mapping[str, float]
+    states_value: dict
         The updated stat-value function.
 
     """
@@ -298,7 +323,7 @@ def policy_iteration(
     if states_value is None:
         states_value = __zero_states_value__(policy, episodic)
 
-    if episodic and "TERM" not in states_value.keys():
+    if episodic and "TERM" not in states_value["states"]:
         raise ValueError("For episodic tasks, there must be a 'TERM' state.")
 
     iteration = 0
@@ -306,11 +331,15 @@ def policy_iteration(
     while iteration < max_iteration:  # expected update loop
         # Policy Evaluation
         states_value_new = policy_evaluation(
-            policy, dynamics, states_value, gamma, episodic, est_acc, max_evaluation_iteration
+            policy,
+            dynamics,
+            copy.deepcopy(states_value),
+            gamma,
+            episodic,
+            est_acc,
+            max_evaluation_iteration,
         )
-        values_L2 = np.sum(
-            [(x1 - x2) ** 2 for x1, x2 in zip(states_value.values(), states_value_new.values())]
-        )
+        values_L2 = np.linalg.norm(states_value["values"] - states_value_new["values"])
         states_value = states_value_new
         # Policy Improvement
         policy, is_stable = policy_improvement(policy, dynamics, states_value, gamma)
@@ -335,8 +364,8 @@ def policy_iteration(
 
 def value_iteration(
     policy: Mapping[Hashable, Mapping[Hashable, float]],
-    dynamics: Mapping[tuple[Hashable, Hashable], Mapping[tuple[Hashable, float], float]],
-    states_value: Mapping[Hashable, float] = None,
+    dynamics: Mapping[tuple[Hashable, Hashable], dict],
+    states_value: dict = None,
     gamma: float = 0.9,
     episodic: bool = True,
     est_acc: float = 0.001,
@@ -356,16 +385,18 @@ def value_iteration(
         It must be a dictianry of dictionaries {state:{action:probability}}.
         Deterministic polices have one and only one action for each state.
 
-    dynamics: Mapping[tuple[Hashable, Hashable], Mapping[tuple[Hashable, float], float]]
+    dynamics: Mapping[tuple[Hashable, Hashable], dict]
         The environment's dynamic p(s', r | s, a). It is a dictionary of dictionaries,
         such that its keys are tuples of (state, action) and its values are dictionaries
-        of {(state, reward):probability}.
+        with three elements
+        {"indices":ndarray, "rewards":ndarray, "probs":ndarray}.
+        The "indices" are the indices of states in state_values.
 
-    states_value: Mapping[Hashable, float], default=None
+    states_value: dict, default=None
         The initial values of estimating stat-value function, v(s).
         When it is 'None', the method initialise it. For episodic=True
         inputs, the initialisation create the "TERM" state too.
-        It must be a dictionary of (state:value).
+        It must be a dictionary like {"states":{state:index}, "values":ndarray}.
 
     gamma: float, default=0.9
         The discount value. It must be in (0,1].
@@ -384,7 +415,7 @@ def value_iteration(
 
     Returns
     -------
-    states_value: Mapping[Hashable, float]
+    states_value: dict
         The updated stat-value function.
 
     """
@@ -394,14 +425,16 @@ def value_iteration(
     if states_value is None:
         states_value = __zero_states_value__(policy, episodic)
 
-    if episodic and "TERM" not in states_value.keys():
+    if episodic and "TERM" not in states_value["states"]:
         raise ValueError("For episodic tasks, there must be a 'TERM' state.")
 
     iteration = 0
     while iteration < max_iteration:  # expected update loop
         # The diff
         max_delta = 0
-        for current_state, value in states_value.items():
+        for current_state, i in states_value["states"].items():
+            value = states_value["values"][i]
+
             if current_state == "TERM":
                 continue
             actions = policy[current_state]
@@ -415,7 +448,7 @@ def value_iteration(
             # Store the changes
             max_delta = max(max_delta, abs(new_value - value))
             # In-place update
-            states_value[current_state] = new_value
+            states_value["values"][i] = new_value
 
         if max_delta <= est_acc:
             if verbose:
