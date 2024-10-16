@@ -3,7 +3,7 @@ flake8
 isort
 mkdocs
 mkdocstrings
-"[python]mkdocstrings"
+mkdocstrings-python
 mkdocs-open-in-new-tab
 pip
 python-dotenv
