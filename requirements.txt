@@ -9,4 +9,6 @@ pip
 python-dotenv
 pytest
 multiprocess
+numpy
+scipy
 -e .
