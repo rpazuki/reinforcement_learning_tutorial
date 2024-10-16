@@ -52,7 +52,6 @@ from typing import Any
 
 import numpy as np
 import pytest
-from arrow import get
 from numpy.testing import assert_array_equal
 from rl.dynamic_programming_np import __Bellman_average__ as Bellman_average
 from rl.dynamic_programming_np import policy_evaluation
