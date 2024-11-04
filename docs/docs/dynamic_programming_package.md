@@ -9,7 +9,7 @@
 [Notebook3: Car rental value iteration](https://github.com/rpazuki/reinforcement_learning_tutorial/blob/main/notebooks/DP_02_value_iter_car_rental.ipynb)  - [Vectorised example](https://github.com/rpazuki/reinforcement_learning_tutorial/blob/main/notebooks/DP_02_policy_iter_action_value_car_rental_vec.ipynb)
 
 
-### Note: Use rl.dynamic_programming for the vectorised version.
+### Note: Use rl.dynamic_programming_vec for the vectorised version.
 ===============
 ::: rl.dynamic_programming
     handler: python
